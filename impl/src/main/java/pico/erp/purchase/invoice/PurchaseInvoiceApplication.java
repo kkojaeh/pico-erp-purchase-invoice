@@ -85,11 +85,6 @@ public class PurchaseInvoiceApplication implements ApplicationStarter {
     return Roles.PURCHASE_INVOICE_PUBLISHER;
   }
 
-  @Bean
-  @Public
-  public Role purchaseInvoiceReceiver() {
-    return Roles.PURCHASE_INVOICE_RECEIVER;
-  }
 
   @Override
   public pico.erp.shared.Application start(String... args) {

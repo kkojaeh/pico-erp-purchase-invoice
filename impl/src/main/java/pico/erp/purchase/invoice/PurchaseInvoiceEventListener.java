@@ -86,6 +86,22 @@ public class PurchaseInvoiceEventListener {
 
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
+    + PurchaseInvoiceEvents.UpdatedEvent.CHANNEL)
+  public void onPurchaseInvoiceCanceled(PurchaseInvoiceEvents.CanceledEvent event) {
+    val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
+    val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());
+    val invoiceId = purchaseInvoice.getInvoiceId();
+    if (invoiceId != null) {
+      invoiceService.cancel(
+        InvoiceRequests.CancelRequest.builder()
+          .id(invoiceId)
+          .build()
+      );
+    }
+  }
+
+  @EventListener
+  @JmsListener(destination = LISTENER_NAME + "."
     + InvoiceEvents.ReceivedEvent.CHANNEL)
   public void onInvoiceReceived(InvoiceEvents.ReceivedEvent event) {
     val invoiceId = event.getInvoiceId();
@@ -99,4 +115,6 @@ public class PurchaseInvoiceEventListener {
       );
     }
   }
+
+
 }

@@ -15,7 +15,7 @@ public enum PurchaseInvoiceStatusKind implements LocalizedNameable {
   DETERMINED,
 
   /**
-   * 전송 완료
+   * 수령 완료
    */
   RECEIVED,
 

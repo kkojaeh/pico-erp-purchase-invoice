@@ -13,7 +13,6 @@ public final class PurchaseInvoiceApi {
   @RequiredArgsConstructor
   public enum Roles implements Role {
 
-    PURCHASE_INVOICE_RECEIVER,
     PURCHASE_INVOICE_PUBLISHER,
     PURCHASE_INVOICE_MANAGER;
 

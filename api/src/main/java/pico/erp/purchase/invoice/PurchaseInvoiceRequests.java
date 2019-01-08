@@ -9,12 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pico.erp.company.CompanyId;
 import pico.erp.invoice.InvoiceId;
 import pico.erp.purchase.order.PurchaseOrderId;
 import pico.erp.shared.TypeDefinitions;
-import pico.erp.shared.data.Address;
-import pico.erp.user.UserId;
 
 public interface PurchaseInvoiceRequests {
 
@@ -119,6 +116,10 @@ public interface PurchaseInvoiceRequests {
   @AllArgsConstructor
   @Builder
   class GenerateRequest {
+
+    @Valid
+    @NotNull
+    PurchaseInvoiceId id;
 
     @Valid
     @NotNull

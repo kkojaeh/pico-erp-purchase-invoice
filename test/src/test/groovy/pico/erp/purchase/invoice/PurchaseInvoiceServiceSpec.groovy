@@ -128,14 +128,17 @@ class PurchaseInvoiceServiceSpec extends Specification {
   def "자동생성 - 발주를 통해 자동 생성" () {
     when:
     determineInvoice()
+    def id = PurchaseInvoiceId.from("purchase-invoice-generated")
     def generated = purchaseInvoiceService.generate(
       new PurchaseInvoiceRequests.GenerateRequest(
+        id: id,
         orderId: orderId
       )
     )
     def invoice = purchaseInvoiceService.get(generated.id)
     def items = invoiceItemService.getAll(generated.id)
     then:
+    generated.id == id
     invoice.orderId == orderId
     items.size() == 2
 

@@ -140,7 +140,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   @Override
   public PurchaseInvoiceData generate(GenerateRequest request) {
     val order = purchaseOrderService.get(request.getOrderId());
-    val id = PurchaseInvoiceId.generate();
+    val id = request.getId();
     val createRequest = PurchaseInvoiceRequests.CreateRequest.builder()
       .id(id)
       .orderId(order.getId())

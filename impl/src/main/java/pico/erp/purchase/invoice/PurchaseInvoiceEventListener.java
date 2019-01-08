@@ -86,7 +86,7 @@ public class PurchaseInvoiceEventListener {
 
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
-    + PurchaseInvoiceEvents.UpdatedEvent.CHANNEL)
+    + PurchaseInvoiceEvents.CanceledEvent.CHANNEL)
   public void onPurchaseInvoiceCanceled(PurchaseInvoiceEvents.CanceledEvent event) {
     val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
     val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());

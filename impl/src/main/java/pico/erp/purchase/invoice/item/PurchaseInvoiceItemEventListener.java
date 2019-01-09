@@ -15,6 +15,7 @@ import pico.erp.item.lot.ItemLotService;
 import pico.erp.item.spec.ItemSpecService;
 import pico.erp.purchase.invoice.PurchaseInvoiceEvents;
 import pico.erp.purchase.invoice.PurchaseInvoiceService;
+import pico.erp.purchase.order.item.PurchaseOrderItemRequests;
 import pico.erp.purchase.order.item.PurchaseOrderItemService;
 
 @SuppressWarnings("unused")
@@ -56,14 +57,13 @@ public class PurchaseInvoiceItemEventListener {
     );
   }
 
-
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceEvents.InvoicedEvent.CHANNEL)
   public void onPurchaseInvoiceInvoiced(PurchaseInvoiceEvents.InvoicedEvent event) {
     val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
 
-    purchaseInvoiceItemService.getAll(event.getPurchaseInvoiceId()).stream()
+    purchaseInvoiceItemService.getAll(event.getPurchaseInvoiceId())
       .forEach(item -> {
         val orderItem = purchaseOrderItemService.get(item.getOrderItemId());
         val itemId = orderItem.getItemId();
@@ -104,6 +104,22 @@ public class PurchaseInvoiceItemEventListener {
           PurchaseInvoiceItemRequests.InvoiceRequest.builder()
             .id(item.getId())
             .invoiceItemId(invoiceItemId)
+            .build()
+        );
+      });
+  }
+
+  @EventListener
+  @JmsListener(destination = LISTENER_NAME + "."
+    + PurchaseInvoiceEvents.ReceivedEvent.CHANNEL)
+  public void onPurchaseInvoiceReceived(PurchaseInvoiceEvents.ReceivedEvent event) {
+
+    purchaseInvoiceItemService.getAll(event.getPurchaseInvoiceId())
+      .forEach(invoiceItem -> {
+        purchaseOrderItemService.receive(
+          PurchaseOrderItemRequests.ReceiveRequest.builder()
+            .id(invoiceItem.getOrderItemId())
+            .quantity(invoiceItem.getQuantity())
             .build()
         );
       });

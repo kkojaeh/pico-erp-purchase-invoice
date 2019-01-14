@@ -4,12 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import pico.erp.purchase.invoice.PurchaseInvoiceId
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests
 import pico.erp.purchase.invoice.PurchaseInvoiceService
+import pico.erp.purchase.order.PurchaseOrderId
+import pico.erp.purchase.order.PurchaseOrderRequests
+import pico.erp.purchase.order.PurchaseOrderService
 import pico.erp.purchase.order.item.PurchaseOrderItemId
 import pico.erp.shared.IntegrationConfiguration
 import spock.lang.Specification
@@ -22,11 +26,17 @@ import spock.lang.Specification
 @ComponentScan("pico.erp.config")
 class PurchaseInvoiceItemServiceSpec extends Specification {
 
+  @Lazy
   @Autowired
-  PurchaseInvoiceService orderService
+  PurchaseInvoiceService invoiceService
 
+  @Lazy
   @Autowired
-  PurchaseInvoiceItemService orderItemService
+  PurchaseInvoiceItemService invoiceItemService
+
+  @Lazy
+  @Autowired
+  PurchaseOrderService orderService
 
   def invoiceId = PurchaseInvoiceId.from("purchase-invoice-test")
 
@@ -36,12 +46,23 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
 
   def unknownId = PurchaseInvoiceItemId.from("unknown")
 
-  def setup() {
+  def orderId = PurchaseOrderId.from("purchase-order-a")
 
+  def setup() {
+    orderService.determine(
+      new PurchaseOrderRequests.DetermineRequest(
+        id: orderId
+      )
+    )
+    orderService.send(
+      new PurchaseOrderRequests.SendRequest(
+        id: orderId
+      )
+    )
   }
 
   def cancelInvoice() {
-    orderService.cancel(
+    invoiceService.cancel(
       new PurchaseInvoiceRequests.CancelRequest(
         id: invoiceId
       )
@@ -49,7 +70,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def determineInvoice() {
-    orderService.determine(
+    invoiceService.determine(
       new PurchaseInvoiceRequests.DetermineRequest(
         id: invoiceId
       )
@@ -57,7 +78,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def receiveInvoice() {
-    orderService.receive(
+    invoiceService.receive(
       new PurchaseInvoiceRequests.ReceiveRequest(
         id: invoiceId
       )
@@ -65,7 +86,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def createItem() {
-    orderItemService.create(
+    invoiceItemService.create(
       new PurchaseInvoiceItemRequests.CreateRequest(
         id: id,
         invoiceId: invoiceId,
@@ -77,7 +98,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def createItem2() {
-    orderItemService.create(
+    invoiceItemService.create(
       new PurchaseInvoiceItemRequests.CreateRequest(
         id: PurchaseInvoiceItemId.from("purchase-invoice-item-2"),
         invoiceId: invoiceId,
@@ -89,7 +110,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def updateItem() {
-    orderItemService.update(
+    invoiceItemService.update(
       new PurchaseInvoiceItemRequests.UpdateRequest(
         id: id,
         quantity: 200,
@@ -99,7 +120,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   }
 
   def deleteItem() {
-    orderItemService.delete(
+    invoiceItemService.delete(
       new PurchaseInvoiceItemRequests.DeleteRequest(
         id: id
       )
@@ -110,7 +131,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   def "존재 - 아이디로 확인"() {
     when:
     createItem()
-    def exists = orderItemService.exists(id)
+    def exists = invoiceItemService.exists(id)
 
     then:
     exists == true
@@ -118,7 +139,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
 
   def "존재 - 존재하지 않는 아이디로 확인"() {
     when:
-    def exists = orderItemService.exists(unknownId)
+    def exists = invoiceItemService.exists(unknownId)
 
     then:
     exists == false
@@ -127,7 +148,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   def "조회 - 아이디로 조회"() {
     when:
     createItem()
-    def item = orderItemService.get(id)
+    def item = invoiceItemService.get(id)
     then:
     item.id == id
     item.orderItemId == orderItemId
@@ -139,7 +160,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
 
   def "조회 - 존재하지 않는 아이디로 조회"() {
     when:
-    orderItemService.get(unknownId)
+    invoiceItemService.get(unknownId)
 
     then:
     thrown(PurchaseInvoiceItemExceptions.NotFoundException)
@@ -148,7 +169,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
   def "생성 - 작성 후 생성"() {
     when:
     createItem()
-    def items = orderItemService.getAll(invoiceId)
+    def items = invoiceItemService.getAll(invoiceId)
     then:
     items.size() > 0
   }
@@ -158,7 +179,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
     createItem()
     determineInvoice()
     createItem2()
-    def items = orderItemService.getAll(invoiceId)
+    def items = invoiceItemService.getAll(invoiceId)
     then:
     items.size() == 2
 
@@ -189,7 +210,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
     when:
     createItem()
     updateItem()
-    def item = orderItemService.get(id)
+    def item = invoiceItemService.get(id)
 
     then:
     item.quantity == 200
@@ -201,7 +222,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
     createItem()
     determineInvoice()
     updateItem()
-    def item = orderItemService.get(id)
+    def item = invoiceItemService.get(id)
 
     then:
     item.quantity == 200
@@ -234,7 +255,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
     when:
     createItem()
     deleteItem()
-    def items = orderItemService.getAll(invoiceId)
+    def items = invoiceItemService.getAll(invoiceId)
     then:
     items.size() == 0
   }
@@ -244,7 +265,7 @@ class PurchaseInvoiceItemServiceSpec extends Specification {
     createItem()
     determineInvoice()
     deleteItem()
-    def items = orderItemService.getAll(invoiceId)
+    def items = invoiceItemService.getAll(invoiceId)
     then:
     items.size() == 0
 

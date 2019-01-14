@@ -10,6 +10,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import pico.erp.audit.AuditApi;
 import pico.erp.audit.AuditConfiguration;
+import pico.erp.invoice.InvoiceApi;
 import pico.erp.item.ItemApi;
 import pico.erp.purchase.invoice.PurchaseInvoiceApi.Roles;
 import pico.erp.purchase.order.PurchaseOrderApi;
@@ -59,7 +60,8 @@ public class PurchaseInvoiceApplication implements ApplicationStarter {
       UserApi.ID,
       ItemApi.ID,
       AuditApi.ID,
-      PurchaseOrderApi.ID
+      PurchaseOrderApi.ID,
+      InvoiceApi.ID
     ).collect(Collectors.toSet());
   }
 

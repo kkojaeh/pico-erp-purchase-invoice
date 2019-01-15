@@ -56,12 +56,12 @@ public class PurchaseInvoiceEntity implements Serializable {
 
 
   @AttributeOverrides({
-    @AttributeOverride(name = "value", column = @Column(name = "PURCHASE_ORDER_ID", length = TypeDefinitions.ID_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "PURCHASE_ORDER_ID", length = TypeDefinitions.UUID_BINARY_LENGTH))
   })
   PurchaseOrderId orderId;
 
   @AttributeOverrides({
-    @AttributeOverride(name = "value", column = @Column(name = "INVOICE_ID", length = TypeDefinitions.ID_LENGTH))
+    @AttributeOverride(name = "value", column = @Column(name = "INVOICE_ID", length = TypeDefinitions.UUID_BINARY_LENGTH))
   })
   InvoiceId invoiceId;
 

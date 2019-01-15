@@ -4,11 +4,11 @@ create table pci_purchase_invoice (
 	created_by_name varchar(50),
 	created_date datetime,
 	due_date datetime,
-	invoice_id binary(50),
+	invoice_id binary(16),
 	last_modified_by_id varchar(50),
 	last_modified_by_name varchar(50),
 	last_modified_date datetime,
-	purchase_order_id binary(50),
+	purchase_order_id binary(16),
 	remark varchar(50),
 	status varchar(20),
 	primary key (id)

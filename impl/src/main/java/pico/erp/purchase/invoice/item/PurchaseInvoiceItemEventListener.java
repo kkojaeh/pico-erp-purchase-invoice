@@ -1,5 +1,8 @@
 package pico.erp.purchase.invoice.item;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -9,9 +12,12 @@ import org.springframework.stereotype.Component;
 import pico.erp.invoice.item.InvoiceItemId;
 import pico.erp.invoice.item.InvoiceItemRequests;
 import pico.erp.invoice.item.InvoiceItemService;
+import pico.erp.item.lot.ItemLotCode;
 import pico.erp.item.lot.ItemLotId;
+import pico.erp.item.lot.ItemLotKey;
 import pico.erp.item.lot.ItemLotRequests;
 import pico.erp.item.lot.ItemLotService;
+import pico.erp.item.spec.ItemSpecCode;
 import pico.erp.item.spec.ItemSpecService;
 import pico.erp.purchase.invoice.PurchaseInvoiceEvents;
 import pico.erp.purchase.invoice.PurchaseInvoiceService;
@@ -57,6 +63,8 @@ public class PurchaseInvoiceItemEventListener {
     );
   }
 
+  private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceEvents.InvoicedEvent.CHANNEL)
@@ -67,26 +75,26 @@ public class PurchaseInvoiceItemEventListener {
       .forEach(item -> {
         val orderItem = purchaseOrderItemService.get(item.getOrderItemId());
         val itemId = orderItem.getItemId();
-        ItemLotId itemLotId = null;
+        ItemLotId lotId = null;
         val itemSpecId = orderItem.getItemSpecId();
-        if (itemSpecId != null) {
-          val itemSpec = itemSpecService.get(orderItem.getItemSpecId());
-          val lotCode = itemSpec.getLotCode();
-          val exists = itemLotService.exists(itemId, lotCode);
-
-          if (exists) {
-            itemLotId = itemLotService.get(itemId, lotCode).getId();
-          } else {
-            itemLotId = ItemLotId.generate();
-            itemLotService.create(
-              ItemLotRequests.CreateRequest.builder()
-                .id(itemLotId)
-                .itemId(itemId)
-                .code(lotCode)
-                .build()
-            );
-
-          }
+        val lotCode = ItemLotCode.from(dateFormatter.format(OffsetDateTime.now()));
+        val specCode = Optional.ofNullable(itemSpecId)
+          .map(specId -> itemSpecService.get(specId).getCode())
+          .orElse(ItemSpecCode.NOT_APPLICABLE);
+        val lotKey = ItemLotKey.from(itemId, specCode, lotCode);
+        val exists = itemLotService.exists(lotKey);
+        if (exists) {
+          lotId = itemLotService.get(lotKey).getId();
+        } else {
+          lotId = ItemLotId.generate();
+          itemLotService.create(
+            ItemLotRequests.CreateRequest.builder()
+              .id(lotId)
+              .itemId(itemId)
+              .specCode(specCode)
+              .lotCode(lotCode)
+              .build()
+          );
         }
         val invoiceItemId = InvoiceItemId.generate();
         invoiceItemService.create(
@@ -94,7 +102,7 @@ public class PurchaseInvoiceItemEventListener {
             .id(invoiceItemId)
             .invoiceId(purchaseInvoice.getInvoiceId())
             .itemId(orderItem.getItemId())
-            .itemLotId(itemLotId)
+            .itemLotId(lotId)
             .quantity(item.getQuantity())
             .unit(orderItem.getUnit())
             .remark(item.getRemark())

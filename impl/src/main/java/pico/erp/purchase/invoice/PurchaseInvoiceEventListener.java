@@ -104,7 +104,7 @@ public class PurchaseInvoiceEventListener {
   @JmsListener(destination = LISTENER_NAME + "."
     + InvoiceEvents.ReceivedEvent.CHANNEL)
   public void onInvoiceReceived(InvoiceEvents.ReceivedEvent event) {
-    val invoiceId = event.getInvoiceId();
+    val invoiceId = event.getId();
     val exists = purchaseInvoiceService.exists(invoiceId);
     if (exists) {
       val purchaseInvoice = purchaseInvoiceService.get(invoiceId);

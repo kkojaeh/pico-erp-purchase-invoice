@@ -59,7 +59,7 @@ public class PurchaseInvoiceItemEventListener {
   public void onPurchaseInvoiceGenerated(PurchaseInvoiceEvents.GeneratedEvent event) {
 
     purchaseInvoiceItemService.generate(
-      new PurchaseInvoiceItemRequests.GenerateRequest(event.getPurchaseInvoiceId())
+      new PurchaseInvoiceItemRequests.GenerateRequest(event.getId())
     );
   }
 
@@ -69,9 +69,9 @@ public class PurchaseInvoiceItemEventListener {
   @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceEvents.InvoicedEvent.CHANNEL)
   public void onPurchaseInvoiceInvoiced(PurchaseInvoiceEvents.InvoicedEvent event) {
-    val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
+    val purchaseInvoice = purchaseInvoiceService.get(event.getId());
 
-    purchaseInvoiceItemService.getAll(event.getPurchaseInvoiceId())
+    purchaseInvoiceItemService.getAll(event.getId())
       .forEach(item -> {
         val orderItem = purchaseOrderItemService.get(item.getOrderItemId());
         val itemId = orderItem.getItemId();
@@ -119,25 +119,9 @@ public class PurchaseInvoiceItemEventListener {
 
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
-    + PurchaseInvoiceEvents.ReceivedEvent.CHANNEL)
-  public void onPurchaseInvoiceReceived(PurchaseInvoiceEvents.ReceivedEvent event) {
-
-    purchaseInvoiceItemService.getAll(event.getPurchaseInvoiceId())
-      .forEach(invoiceItem -> {
-        purchaseOrderItemService.receive(
-          PurchaseOrderItemRequests.ReceiveRequest.builder()
-            .id(invoiceItem.getOrderItemId())
-            .quantity(invoiceItem.getQuantity())
-            .build()
-        );
-      });
-  }
-
-  @EventListener
-  @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceItemEvents.UpdatedEvent.CHANNEL)
   public void onPurchaseInvoiceItemUpdated(PurchaseInvoiceItemEvents.UpdatedEvent event) {
-    val purchaseInvoiceItem = purchaseInvoiceItemService.get(event.getPurchaseInvoiceItemId());
+    val purchaseInvoiceItem = purchaseInvoiceItemService.get(event.getId());
     val invoiceItemId = purchaseInvoiceItem.getInvoiceItemId();
     if(invoiceItemId != null) {
       invoiceItemService.update(
@@ -148,6 +132,22 @@ public class PurchaseInvoiceItemEventListener {
           .build()
       );
     }
+  }
+
+  @EventListener
+  @JmsListener(destination = LISTENER_NAME + "."
+    + PurchaseInvoiceEvents.ReceivedEvent.CHANNEL)
+  public void onPurchaseInvoiceReceived(PurchaseInvoiceEvents.ReceivedEvent event) {
+
+    purchaseInvoiceItemService.getAll(event.getId())
+      .forEach(invoiceItem -> {
+        purchaseOrderItemService.receive(
+          PurchaseOrderItemRequests.ReceiveRequest.builder()
+            .id(invoiceItem.getOrderItemId())
+            .quantity(invoiceItem.getQuantity())
+            .build()
+        );
+      });
   }
 
 

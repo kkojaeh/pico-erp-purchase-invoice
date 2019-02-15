@@ -40,9 +40,25 @@ public class PurchaseInvoiceEventListener {
 
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
+    + PurchaseInvoiceEvents.CanceledEvent.CHANNEL)
+  public void onPurchaseInvoiceCanceled(PurchaseInvoiceEvents.CanceledEvent event) {
+    val purchaseInvoice = purchaseInvoiceService.get(event.getId());
+    val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());
+    val invoiceId = purchaseInvoice.getInvoiceId();
+    if (invoiceId != null) {
+      invoiceService.cancel(
+        InvoiceRequests.CancelRequest.builder()
+          .id(invoiceId)
+          .build()
+      );
+    }
+  }
+
+  @EventListener
+  @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceEvents.DeterminedEvent.CHANNEL)
   public void onPurchaseInvoiceDetermined(PurchaseInvoiceEvents.DeterminedEvent event) {
-    val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
+    val purchaseInvoice = purchaseInvoiceService.get(event.getId());
     val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());
     val invoiceId = InvoiceId.generate();
     invoiceService.create(
@@ -67,7 +83,7 @@ public class PurchaseInvoiceEventListener {
   @JmsListener(destination = LISTENER_NAME + "."
     + PurchaseInvoiceEvents.UpdatedEvent.CHANNEL)
   public void onPurchaseInvoiceUpdated(PurchaseInvoiceEvents.UpdatedEvent event) {
-    val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
+    val purchaseInvoice = purchaseInvoiceService.get(event.getId());
     val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());
     val invoiceId = purchaseInvoice.getInvoiceId();
     if (invoiceId != null) {
@@ -79,22 +95,6 @@ public class PurchaseInvoiceEventListener {
           .senderId(purchaseOrder.getSupplierId())
           .receiveAddress(purchaseOrder.getReceiveAddress())
           .remark(purchaseInvoice.getRemark())
-          .build()
-      );
-    }
-  }
-
-  @EventListener
-  @JmsListener(destination = LISTENER_NAME + "."
-    + PurchaseInvoiceEvents.CanceledEvent.CHANNEL)
-  public void onPurchaseInvoiceCanceled(PurchaseInvoiceEvents.CanceledEvent event) {
-    val purchaseInvoice = purchaseInvoiceService.get(event.getPurchaseInvoiceId());
-    val purchaseOrder = purchaseOrderService.get(purchaseInvoice.getOrderId());
-    val invoiceId = purchaseInvoice.getInvoiceId();
-    if (invoiceId != null) {
-      invoiceService.cancel(
-        InvoiceRequests.CancelRequest.builder()
-          .id(invoiceId)
           .build()
       );
     }

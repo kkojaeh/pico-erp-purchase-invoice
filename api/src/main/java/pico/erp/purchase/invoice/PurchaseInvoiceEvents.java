@@ -14,7 +14,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.created";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -29,7 +29,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.progressed";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -44,7 +44,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.determined";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -59,7 +59,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.updated";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -74,7 +74,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.canceled";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -89,7 +89,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.received";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -104,7 +104,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.sent";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -119,7 +119,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.rejected";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -134,7 +134,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.invoiced";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;
@@ -149,7 +149,7 @@ public interface PurchaseInvoiceEvents {
 
     public final static String CHANNEL = "event.purchase-invoice.generated";
 
-    private PurchaseInvoiceId purchaseInvoiceId;
+    private PurchaseInvoiceId id;
 
     public String channel() {
       return CHANNEL;

@@ -15,7 +15,7 @@ public interface PurchaseInvoiceItemEvents {
 
     public final static String CHANNEL = "event.purchase-invoice-item.created";
 
-    private PurchaseInvoiceItemId purchaseInvoiceItemId;
+    private PurchaseInvoiceItemId id;
 
     public String channel() {
       return CHANNEL;
@@ -30,7 +30,7 @@ public interface PurchaseInvoiceItemEvents {
 
     public final static String CHANNEL = "event.purchase-invoice-item.updated";
 
-    private PurchaseInvoiceItemId purchaseInvoiceItemId;
+    private PurchaseInvoiceItemId id;
 
     public String channel() {
       return CHANNEL;
@@ -45,7 +45,7 @@ public interface PurchaseInvoiceItemEvents {
 
     public final static String CHANNEL = "event.purchase-invoice-item.deleted";
 
-    private PurchaseInvoiceItemId purchaseInvoiceItemId;
+    private PurchaseInvoiceItemId id;
 
     public String channel() {
       return CHANNEL;
@@ -60,7 +60,7 @@ public interface PurchaseInvoiceItemEvents {
 
     public final static String CHANNEL = "event.purchase-invoice-item.invoiced";
 
-    private PurchaseInvoiceItemId purchaseInvoiceItemId;
+    private PurchaseInvoiceItemId id;
 
     public String channel() {
       return CHANNEL;
@@ -75,7 +75,7 @@ public interface PurchaseInvoiceItemEvents {
 
     public final static String CHANNEL = "event.purchase-invoice-item.generated";
 
-    private List<PurchaseInvoiceItemId> purchaseInvoiceItemIds;
+    private List<PurchaseInvoiceItemId> ids;
 
     public String channel() {
       return CHANNEL;

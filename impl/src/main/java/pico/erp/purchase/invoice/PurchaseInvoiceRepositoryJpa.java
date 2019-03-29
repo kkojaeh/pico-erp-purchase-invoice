@@ -20,7 +20,7 @@ interface PurchaseInvoiceEntityRepository extends
   Stream<PurchaseInvoiceEntity> findAllBy(@Param("orderId") PurchaseOrderId orderId);
 
   @Query("SELECT i FROM PurchaseInvoice i WHERE i.invoiceId = :invoiceId")
-  PurchaseInvoiceEntity findBy(@Param("invoiceId") InvoiceId invoiceId);
+  Optional<PurchaseInvoiceEntity> findBy(@Param("invoiceId") InvoiceId invoiceId);
 
   @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM PurchaseInvoice i WHERE i.invoiceId = :invoiceId")
   boolean exists(@Param("invoiceId") InvoiceId invoiceId);
@@ -46,12 +46,12 @@ public class PurchaseInvoiceRepositoryJpa implements PurchaseInvoiceRepository {
 
   @Override
   public void deleteBy(PurchaseInvoiceId id) {
-    repository.delete(id);
+    repository.deleteById(id);
   }
 
   @Override
   public boolean exists(PurchaseInvoiceId id) {
-    return repository.exists(id);
+    return repository.existsById(id);
   }
 
   @Override
@@ -61,13 +61,13 @@ public class PurchaseInvoiceRepositoryJpa implements PurchaseInvoiceRepository {
 
   @Override
   public Optional<PurchaseInvoice> findBy(PurchaseInvoiceId id) {
-    return Optional.ofNullable(repository.findOne(id))
+    return repository.findById(id)
       .map(mapper::jpa);
   }
 
   @Override
   public Optional<PurchaseInvoice> findBy(InvoiceId invoiceId) {
-    return Optional.ofNullable(repository.findBy(invoiceId))
+    return repository.findBy(invoiceId)
       .map(mapper::jpa);
   }
 
@@ -79,7 +79,7 @@ public class PurchaseInvoiceRepositoryJpa implements PurchaseInvoiceRepository {
 
   @Override
   public void update(PurchaseInvoice plan) {
-    val entity = repository.findOne(plan.getId());
+    val entity = repository.findById(plan.getId()).get();
     mapper.pass(mapper.jpa(plan), entity);
     repository.save(entity);
   }

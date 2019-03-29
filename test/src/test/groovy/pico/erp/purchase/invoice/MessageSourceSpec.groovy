@@ -1,26 +1,38 @@
 package pico.erp.purchase.invoice
 
+import kkojaeh.spring.boot.component.SpringBootTestComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.MessageSource
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import pico.erp.shared.IntegrationConfiguration
+import pico.erp.company.CompanyApplication
+import pico.erp.delivery.DeliveryApplication
+import pico.erp.document.DocumentApplication
+import pico.erp.invoice.InvoiceApplication
+import pico.erp.item.ItemApplication
+import pico.erp.project.ProjectApplication
+import pico.erp.purchase.order.PurchaseOrderApplication
+import pico.erp.purchase.request.PurchaseRequestApplication
+import pico.erp.shared.TestParentApplication
+import pico.erp.user.UserApplication
+import pico.erp.warehouse.WarehouseApplication
 import spock.lang.Specification
 
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-@SpringBootTest(classes = [IntegrationConfiguration])
+@SpringBootTest(classes = [PurchaseInvoiceApplication, TestConfig])
+@SpringBootTestComponent(parent = TestParentApplication, siblings = [
+  UserApplication, ItemApplication, ProjectApplication, CompanyApplication,
+  PurchaseOrderApplication, PurchaseRequestApplication, InvoiceApplication, DocumentApplication,
+  DeliveryApplication, WarehouseApplication
+])
 @Transactional
 @Rollback
 @ActiveProfiles("test")
-@Configuration
-@ComponentScan("pico.erp.config")
 class MessageSourceSpec extends Specification {
 
   @Autowired

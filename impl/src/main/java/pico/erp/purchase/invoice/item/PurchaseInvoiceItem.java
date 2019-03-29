@@ -11,11 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import pico.erp.audit.annotation.Audit;
 import pico.erp.invoice.item.InvoiceItemData;
-import pico.erp.item.ItemData;
-import pico.erp.item.spec.ItemSpecData;
-import pico.erp.project.ProjectData;
 import pico.erp.purchase.invoice.PurchaseInvoice;
 import pico.erp.purchase.order.item.PurchaseOrderItemData;
 
@@ -28,7 +24,6 @@ import pico.erp.purchase.order.item.PurchaseOrderItemData;
 @EqualsAndHashCode(of = "id")
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Audit(alias = "purchase-invoice-item")
 public class PurchaseInvoiceItem implements Serializable {
 
   private static final long serialVersionUID = 1L;

@@ -1,6 +1,6 @@
 package pico.erp.purchase.invoice;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import lombok.Data;
 import pico.erp.invoice.InvoiceId;
 import pico.erp.purchase.order.PurchaseOrderId;
@@ -14,7 +14,7 @@ public class PurchaseInvoiceData {
 
   InvoiceId invoiceId;
 
-  OffsetDateTime dueDate;
+  LocalDateTime dueDate;
 
   PurchaseInvoiceStatusKind status;
 

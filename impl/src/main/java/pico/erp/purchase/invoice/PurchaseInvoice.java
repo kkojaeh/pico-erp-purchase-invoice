@@ -1,7 +1,7 @@
 package pico.erp.purchase.invoice;
 
 import java.io.Serializable;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import javax.persistence.Id;
 import lombok.AccessLevel;
@@ -11,13 +11,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import pico.erp.audit.annotation.Audit;
-import pico.erp.company.CompanyData;
 import pico.erp.invoice.InvoiceData;
 import pico.erp.purchase.invoice.PurchaseInvoiceEvents.DeterminedEvent;
 import pico.erp.purchase.order.PurchaseOrderData;
-import pico.erp.shared.data.Address;
-import pico.erp.shared.data.Auditor;
 
 /**
  * 주문 접수
@@ -28,7 +24,6 @@ import pico.erp.shared.data.Auditor;
 @EqualsAndHashCode(of = "id")
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Audit(alias = "purchase-invoice")
 public class PurchaseInvoice implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -40,7 +35,7 @@ public class PurchaseInvoice implements Serializable {
 
   InvoiceData invoice;
 
-  OffsetDateTime dueDate;
+  LocalDateTime dueDate;
 
   String remark;
 

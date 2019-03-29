@@ -1,6 +1,6 @@
 package pico.erp.purchase.invoice;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.val;
@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import pico.erp.audit.AuditService;
 import pico.erp.invoice.InvoiceId;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.CancelRequest;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.DetermineRequest;
@@ -18,12 +17,10 @@ import pico.erp.purchase.invoice.PurchaseInvoiceRequests.InvoiceRequest;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.ReceiveRequest;
 import pico.erp.purchase.order.PurchaseOrderId;
 import pico.erp.purchase.order.PurchaseOrderService;
-import pico.erp.shared.Public;
 import pico.erp.shared.event.EventPublisher;
 
 @SuppressWarnings("Duplicates")
 @Service
-@Public
 @Transactional
 @Validated
 public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
@@ -39,10 +36,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
 
   @Lazy
   @Autowired
-  private AuditService auditService;
-
-  @Lazy
-  @Autowired
   private PurchaseOrderService purchaseOrderService;
 
   @Override
@@ -51,7 +44,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -68,7 +60,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       throw new PurchaseInvoiceExceptions.AlreadyExistsException();
     }
     val created = purchaseInvoiceRepository.create(purchaseInvoice);
-    auditService.commit(created);
     eventPublisher.publishEvents(response.getEvents());
     return mapper.map(created);
   }
@@ -103,7 +94,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -113,7 +103,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -123,7 +112,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -133,7 +121,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -144,7 +131,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
     val createRequest = PurchaseInvoiceRequests.CreateRequest.builder()
       .id(id)
       .orderId(order.getId())
-      .dueDate(OffsetDateTime.now().plusDays(1))
+      .dueDate(LocalDateTime.now().plusDays(1))
       .build();
     val created = create(createRequest);
     eventPublisher.publishEvent(

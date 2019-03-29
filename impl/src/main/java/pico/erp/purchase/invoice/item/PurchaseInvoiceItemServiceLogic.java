@@ -3,25 +3,22 @@ package pico.erp.purchase.invoice.item;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import kkojaeh.spring.boot.component.Give;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import pico.erp.audit.AuditService;
 import pico.erp.purchase.invoice.PurchaseInvoiceId;
 import pico.erp.purchase.invoice.PurchaseInvoiceService;
 import pico.erp.purchase.invoice.item.PurchaseInvoiceItemRequests.DeleteRequest;
-import pico.erp.purchase.invoice.item.PurchaseInvoiceItemRequests.GenerateRequest;
-import pico.erp.purchase.invoice.item.PurchaseInvoiceItemRequests.InvoiceRequest;
 import pico.erp.purchase.order.item.PurchaseOrderItemService;
-import pico.erp.shared.Public;
 import pico.erp.shared.event.EventPublisher;
 
 @SuppressWarnings("Duplicates")
 @Service
-@Public
+@Give
 @Transactional
 @Validated
 public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemService {
@@ -34,10 +31,6 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
 
   @Autowired
   private PurchaseInvoiceItemMapper mapper;
-
-  @Lazy
-  @Autowired
-  private AuditService auditService;
 
   @Lazy
   @Autowired
@@ -56,7 +49,6 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
       throw new PurchaseInvoiceItemExceptions.AlreadyExistsException();
     }
     val created = itemRepository.create(item);
-    auditService.commit(created);
     eventPublisher.publishEvents(response.getEvents());
     return mapper.map(created);
   }
@@ -67,7 +59,6 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
       .orElseThrow(PurchaseInvoiceItemExceptions.NotFoundException::new);
     val response = item.apply(mapper.map(request));
     itemRepository.deleteBy(item.getId());
-    auditService.commit(item);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -99,7 +90,6 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
       .orElseThrow(PurchaseInvoiceItemExceptions.NotFoundException::new);
     val response = item.apply(mapper.map(request));
     itemRepository.update(item);
-    auditService.commit(item);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -131,7 +121,6 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
       .orElseThrow(PurchaseInvoiceItemExceptions.NotFoundException::new);
     val response = item.apply(mapper.map(request));
     itemRepository.update(item);
-    auditService.commit(item);
     eventPublisher.publishEvents(response.getEvents());
   }
 

@@ -3,7 +3,7 @@ package pico.erp.purchase.invoice.item;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -27,9 +27,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pico.erp.invoice.item.InvoiceItemId;
-import pico.erp.item.ItemId;
-import pico.erp.item.spec.ItemSpecId;
-import pico.erp.project.ProjectId;
 import pico.erp.purchase.invoice.PurchaseInvoiceId;
 import pico.erp.purchase.order.item.PurchaseOrderItemId;
 import pico.erp.shared.TypeDefinitions;
@@ -86,7 +83,7 @@ public class PurchaseInvoiceItemEntity implements Serializable {
 
   @CreatedDate
   @Column(updatable = false)
-  OffsetDateTime createdDate;
+  LocalDateTime createdDate;
 
   @Embedded
   @AttributeOverrides({
@@ -97,6 +94,6 @@ public class PurchaseInvoiceItemEntity implements Serializable {
   Auditor lastModifiedBy;
 
   @LastModifiedDate
-  OffsetDateTime lastModifiedDate;
+  LocalDateTime lastModifiedDate;
 
 }

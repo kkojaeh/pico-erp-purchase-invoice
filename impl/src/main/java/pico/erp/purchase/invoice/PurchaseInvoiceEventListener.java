@@ -1,8 +1,8 @@
 package pico.erp.purchase.invoice;
 
+import kkojaeh.spring.boot.component.Take;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -21,20 +21,16 @@ public class PurchaseInvoiceEventListener {
 
   private static final String LISTENER_NAME = "listener.purchase-invoice-event-listener";
 
-  @Lazy
-  @Autowired
+  @Take
   private InvoiceService invoiceService;
 
-  @Lazy
   @Autowired
   private PurchaseInvoiceService purchaseInvoiceService;
 
-  @Lazy
   @Autowired
   private PurchaseInvoiceItemService purchaseInvoiceItemService;
 
-  @Lazy
-  @Autowired
+  @Take
   private PurchaseOrderService purchaseOrderService;
 
 

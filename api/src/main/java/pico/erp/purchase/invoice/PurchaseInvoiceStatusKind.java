@@ -32,16 +32,16 @@ public enum PurchaseInvoiceStatusKind implements LocalizedNameable {
     return this == DRAFT;
   }
 
+  public boolean isInvoiceable() {
+    return this == DETERMINED;
+  }
+
   public boolean isReceivable() {
     return this == DETERMINED;
   }
 
   public boolean isUpdatable() {
     return this == DRAFT || this == DETERMINED;
-  }
-
-  public boolean isInvoiceable() {
-    return this == DETERMINED;
   }
 
 }

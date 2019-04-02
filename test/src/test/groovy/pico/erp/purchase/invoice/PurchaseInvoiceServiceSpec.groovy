@@ -71,7 +71,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     purchaseInvoiceService.create(
       new PurchaseInvoiceRequests.CreateRequest(
         id: id,
-        orderId:  orderId,
+        orderId: orderId,
         dueDate: dueDate,
         remark: remark
       )
@@ -82,7 +82,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     purchaseInvoiceService.create(
       new PurchaseInvoiceRequests.CreateRequest(
         id: id2,
-        orderId:  orderId,
+        orderId: orderId,
         dueDate: dueDate,
         remark: remark
       )
@@ -104,7 +104,6 @@ class PurchaseInvoiceServiceSpec extends Specification {
       )
     )
   }
-
 
 
   def receiveInvoice() {
@@ -137,7 +136,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     )
   }
 
-  def "자동생성 - 발주를 통해 자동 생성" () {
+  def "자동생성 - 발주를 통해 자동 생성"() {
     when:
     determineInvoice()
     def id = PurchaseInvoiceId.from("purchase-invoice-generated")
@@ -156,7 +155,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   }
 
-  def "생성 - 작성중인 송장 존재" () {
+  def "생성 - 작성중인 송장 존재"() {
     when:
     createInvoice2()
     then:
@@ -164,7 +163,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   }
 
-  def "생성 - 확정 한 송장 존재" () {
+  def "생성 - 확정 한 송장 존재"() {
     when:
     determineInvoice()
     createInvoice2()

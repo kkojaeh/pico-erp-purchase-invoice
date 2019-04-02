@@ -86,10 +86,10 @@ public class PurchaseInvoiceItem implements Serializable {
 
   public PurchaseInvoiceItemMessages.Invoice.Response apply(
     PurchaseInvoiceItemMessages.Invoice.Request request) {
-    if(invoiceItem != null){
+    if (invoiceItem != null) {
       throw new PurchaseInvoiceItemExceptions.CannotInvoiceException();
     }
-    if(!request.getInvoiceItem().getInvoiceId().equals(this.invoice.getInvoice().getId())){
+    if (!request.getInvoiceItem().getInvoiceId().equals(this.invoice.getInvoice().getId())) {
       throw new PurchaseInvoiceItemExceptions.CannotInvoiceException();
     }
     this.invoiceItem = request.getInvoiceItem();

@@ -14,15 +14,15 @@ public interface PurchaseInvoiceItemService {
 
   boolean exists(@Valid @NotNull PurchaseInvoiceItemId id);
 
+  void generate(@Valid @NotNull PurchaseInvoiceItemRequests.GenerateRequest request);
+
   PurchaseInvoiceItemData get(@Valid @NotNull PurchaseInvoiceItemId id);
 
   List<PurchaseInvoiceItemData> getAll(PurchaseInvoiceId invoiceId);
 
-  void update(@Valid @NotNull PurchaseInvoiceItemRequests.UpdateRequest request);
-
-  void generate(@Valid @NotNull PurchaseInvoiceItemRequests.GenerateRequest request);
-
   void invoice(@Valid @NotNull PurchaseInvoiceItemRequests.InvoiceRequest request);
+
+  void update(@Valid @NotNull PurchaseInvoiceItemRequests.UpdateRequest request);
 
 
 }

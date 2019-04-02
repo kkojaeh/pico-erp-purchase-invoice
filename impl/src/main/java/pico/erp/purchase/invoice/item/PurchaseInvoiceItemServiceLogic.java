@@ -61,12 +61,33 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
   }
 
 
-
   @Override
   public boolean exists(PurchaseInvoiceItemId id) {
     return itemRepository.exists(id);
   }
 
+  @Override
+  public void generate(PurchaseInvoiceItemRequests.GenerateRequest request) {
+    val invoice = invoiceService.get(request.getInvoiceId());
+    val orderItems = purchaseOrderItemService.getAll(invoice.getOrderId());
+    val createRequests = orderItems.stream()
+      .map(item -> PurchaseInvoiceItemRequests.CreateRequest.builder()
+        .id(PurchaseInvoiceItemId.generate())
+        .invoiceId(invoice.getId())
+        .orderItemId(item.getId())
+        .quantity(BigDecimal.ZERO)
+        .remark(item.getRemark())
+        .build()
+      ).collect(Collectors.toList());
+    createRequests.forEach(this::create);
+    eventPublisher.publishEvent(
+      new PurchaseInvoiceItemEvents.GeneratedEvent(
+        createRequests.stream()
+          .map(PurchaseInvoiceItemRequests.CreateRequest::getId)
+          .collect(Collectors.toList())
+      )
+    );
+  }
 
   @Override
   public PurchaseInvoiceItemData get(PurchaseInvoiceItemId id) {
@@ -83,7 +104,7 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
   }
 
   @Override
-  public void update(PurchaseInvoiceItemRequests.UpdateRequest request) {
+  public void invoice(PurchaseInvoiceItemRequests.InvoiceRequest request) {
     val item = itemRepository.findBy(request.getId())
       .orElseThrow(PurchaseInvoiceItemExceptions.NotFoundException::new);
     val response = item.apply(mapper.map(request));
@@ -92,29 +113,7 @@ public class PurchaseInvoiceItemServiceLogic implements PurchaseInvoiceItemServi
   }
 
   @Override
-  public void generate(PurchaseInvoiceItemRequests.GenerateRequest request) {
-    val invoice = invoiceService.get(request.getInvoiceId());
-    val orderItems = purchaseOrderItemService.getAll(invoice.getOrderId());
-    val createRequests = orderItems.stream().map(item -> PurchaseInvoiceItemRequests.CreateRequest.builder()
-      .id(PurchaseInvoiceItemId.generate())
-      .invoiceId(invoice.getId())
-      .orderItemId(item.getId())
-      .quantity(BigDecimal.ZERO)
-      .remark(item.getRemark())
-      .build()
-    ).collect(Collectors.toList());
-    createRequests.forEach(this::create);
-    eventPublisher.publishEvent(
-      new PurchaseInvoiceItemEvents.GeneratedEvent(
-        createRequests.stream()
-          .map(PurchaseInvoiceItemRequests.CreateRequest::getId)
-          .collect(Collectors.toList())
-      )
-    );
-  }
-
-  @Override
-  public void invoice(PurchaseInvoiceItemRequests.InvoiceRequest request) {
+  public void update(PurchaseInvoiceItemRequests.UpdateRequest request) {
     val item = itemRepository.findBy(request.getId())
       .orElseThrow(PurchaseInvoiceItemExceptions.NotFoundException::new);
     val response = item.apply(mapper.map(request));

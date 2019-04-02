@@ -16,14 +16,14 @@ import pico.erp.purchase.order.PurchaseOrderId;
 interface PurchaseInvoiceEntityRepository extends
   CrudRepository<PurchaseInvoiceEntity, PurchaseInvoiceId> {
 
+  @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM PurchaseInvoice i WHERE i.invoiceId = :invoiceId")
+  boolean exists(@Param("invoiceId") InvoiceId invoiceId);
+
   @Query("SELECT i FROM PurchaseInvoice i WHERE i.orderId = :orderId ORDER BY i.createdDate")
   Stream<PurchaseInvoiceEntity> findAllBy(@Param("orderId") PurchaseOrderId orderId);
 
   @Query("SELECT i FROM PurchaseInvoice i WHERE i.invoiceId = :invoiceId")
   Optional<PurchaseInvoiceEntity> findBy(@Param("invoiceId") InvoiceId invoiceId);
-
-  @Query("SELECT CASE WHEN COUNT(i) > 0 THEN true ELSE false END FROM PurchaseInvoice i WHERE i.invoiceId = :invoiceId")
-  boolean exists(@Param("invoiceId") InvoiceId invoiceId);
 
 }
 
@@ -60,8 +60,8 @@ public class PurchaseInvoiceRepositoryJpa implements PurchaseInvoiceRepository {
   }
 
   @Override
-  public Optional<PurchaseInvoice> findBy(PurchaseInvoiceId id) {
-    return repository.findById(id)
+  public Stream<PurchaseInvoice> findAllBy(PurchaseOrderId orderId) {
+    return repository.findAllBy(orderId)
       .map(mapper::jpa);
   }
 
@@ -72,8 +72,8 @@ public class PurchaseInvoiceRepositoryJpa implements PurchaseInvoiceRepository {
   }
 
   @Override
-  public Stream<PurchaseInvoice> findAllBy(PurchaseOrderId orderId) {
-    return repository.findAllBy(orderId)
+  public Optional<PurchaseInvoice> findBy(PurchaseInvoiceId id) {
+    return repository.findById(id)
       .map(mapper::jpa);
   }
 

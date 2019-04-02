@@ -118,20 +118,20 @@ public class PurchaseInvoice implements Serializable {
     return status.isCancelable();
   }
 
-  public boolean isReceivable() {
-    return status.isReceivable();
-  }
-
   public boolean isDeterminable() {
     return status.isDeterminable();
   }
 
-  public boolean isUpdatable() {
-    return status.isUpdatable();
-  }
-
   public boolean isInvoiceable() {
     return status.isInvoiceable() && invoice == null;
+  }
+
+  public boolean isReceivable() {
+    return status.isReceivable();
+  }
+
+  public boolean isUpdatable() {
+    return status.isUpdatable();
   }
 
 

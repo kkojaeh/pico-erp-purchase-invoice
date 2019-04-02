@@ -63,6 +63,12 @@ public abstract class PurchaseInvoiceMapper {
   @Take
   private InvoiceService invoiceService;
 
+  protected Auditor auditor(UserId userId) {
+    return Optional.ofNullable(userId)
+      .map(userService::getAuditor)
+      .orElse(null);
+  }
+
   @Mappings({
     @Mapping(target = "orderId", source = "order.id"),
     @Mapping(target = "invoiceId", source = "invoice.id"),
@@ -87,12 +93,6 @@ public abstract class PurchaseInvoiceMapper {
   protected UserData map(UserId userId) {
     return Optional.ofNullable(userId)
       .map(userService::get)
-      .orElse(null);
-  }
-
-  protected Auditor auditor(UserId userId) {
-    return Optional.ofNullable(userId)
-      .map(userService::getAuditor)
       .orElse(null);
   }
 

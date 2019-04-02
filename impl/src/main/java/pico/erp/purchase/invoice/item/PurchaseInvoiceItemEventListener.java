@@ -1,8 +1,8 @@
 package pico.erp.purchase.invoice.item;
 
+import kkojaeh.spring.boot.component.Take;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -25,24 +25,19 @@ public class PurchaseInvoiceItemEventListener {
   @Autowired
   private PurchaseInvoiceItemService purchaseInvoiceItemService;
 
-  @Lazy
-  @Autowired
+  @Take
   private PurchaseOrderItemService purchaseOrderItemService;
 
-  @Lazy
-  @Autowired
+  @Take
   private InvoiceItemService invoiceItemService;
 
-  @Lazy
   @Autowired
   private PurchaseInvoiceService purchaseInvoiceService;
 
-  @Lazy
-  @Autowired
+  @Take
   private ItemLotService itemLotService;
 
-  @Lazy
-  @Autowired
+  @Take
   private ItemSpecService itemSpecService;
 
   @EventListener
@@ -93,7 +88,7 @@ public class PurchaseInvoiceItemEventListener {
   public void onPurchaseInvoiceItemUpdated(PurchaseInvoiceItemEvents.UpdatedEvent event) {
     val purchaseInvoiceItem = purchaseInvoiceItemService.get(event.getId());
     val invoiceItemId = purchaseInvoiceItem.getInvoiceItemId();
-    if(invoiceItemId != null) {
+    if (invoiceItemId != null) {
       invoiceItemService.update(
         InvoiceItemRequests.UpdateRequest.builder()
           .id(invoiceItemId)

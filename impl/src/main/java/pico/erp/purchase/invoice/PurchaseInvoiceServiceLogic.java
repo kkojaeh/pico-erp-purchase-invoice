@@ -3,9 +3,10 @@ package pico.erp.purchase.invoice;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import kkojaeh.spring.boot.component.Give;
+import kkojaeh.spring.boot.component.Take;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import pico.erp.purchase.order.PurchaseOrderService;
 import pico.erp.shared.event.EventPublisher;
 
 @SuppressWarnings("Duplicates")
+@Give
 @Service
 @Transactional
 @Validated
@@ -34,8 +36,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   @Autowired
   private PurchaseInvoiceMapper mapper;
 
-  @Lazy
-  @Autowired
+  @Take
   private PurchaseOrderService purchaseOrderService;
 
   @Override
@@ -65,39 +66,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   }
 
   @Override
-  public boolean exists(PurchaseInvoiceId id) {
-    return purchaseInvoiceRepository.exists(id);
-  }
-
-  @Override
-  public boolean exists(InvoiceId invoiceId) {
-    return purchaseInvoiceRepository.exists(invoiceId);
-  }
-
-  @Override
-  public PurchaseInvoiceData get(PurchaseInvoiceId id) {
-    return purchaseInvoiceRepository.findBy(id)
-      .map(mapper::map)
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-  }
-
-  @Override
-  public PurchaseInvoiceData get(InvoiceId invoiceId) {
-    return purchaseInvoiceRepository.findBy(invoiceId)
-      .map(mapper::map)
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-  }
-
-  @Override
-  public void update(PurchaseInvoiceRequests.UpdateRequest request) {
-    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-    val response = purchaseInvoice.apply(mapper.map(request));
-    purchaseInvoiceRepository.update(purchaseInvoice);
-    eventPublisher.publishEvents(response.getEvents());
-  }
-
-  @Override
   public void determine(DetermineRequest request) {
     val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
@@ -107,21 +75,13 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   }
 
   @Override
-  public void receive(ReceiveRequest request) {
-    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-    val response = purchaseInvoice.apply(mapper.map(request));
-    purchaseInvoiceRepository.update(purchaseInvoice);
-    eventPublisher.publishEvents(response.getEvents());
+  public boolean exists(PurchaseInvoiceId id) {
+    return purchaseInvoiceRepository.exists(id);
   }
 
   @Override
-  public void invoice(InvoiceRequest request) {
-    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-    val response = purchaseInvoice.apply(mapper.map(request));
-    purchaseInvoiceRepository.update(purchaseInvoice);
-    eventPublisher.publishEvents(response.getEvents());
+  public boolean exists(InvoiceId invoiceId) {
+    return purchaseInvoiceRepository.exists(invoiceId);
   }
 
   @Override
@@ -141,10 +101,51 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   }
 
   @Override
+  public PurchaseInvoiceData get(PurchaseInvoiceId id) {
+    return purchaseInvoiceRepository.findBy(id)
+      .map(mapper::map)
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+  }
+
+  @Override
+  public PurchaseInvoiceData get(InvoiceId invoiceId) {
+    return purchaseInvoiceRepository.findBy(invoiceId)
+      .map(mapper::map)
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+  }
+
+  @Override
   public List<PurchaseInvoiceData> getAll(PurchaseOrderId orderId) {
     return purchaseInvoiceRepository.findAllBy(orderId)
       .map(mapper::map)
       .collect(Collectors.toList());
+  }
+
+  @Override
+  public void invoice(InvoiceRequest request) {
+    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+    val response = purchaseInvoice.apply(mapper.map(request));
+    purchaseInvoiceRepository.update(purchaseInvoice);
+    eventPublisher.publishEvents(response.getEvents());
+  }
+
+  @Override
+  public void receive(ReceiveRequest request) {
+    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+    val response = purchaseInvoice.apply(mapper.map(request));
+    purchaseInvoiceRepository.update(purchaseInvoice);
+    eventPublisher.publishEvents(response.getEvents());
+  }
+
+  @Override
+  public void update(PurchaseInvoiceRequests.UpdateRequest request) {
+    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+    val response = purchaseInvoice.apply(mapper.map(request));
+    purchaseInvoiceRepository.update(purchaseInvoice);
+    eventPublisher.publishEvents(response.getEvents());
   }
 
 }

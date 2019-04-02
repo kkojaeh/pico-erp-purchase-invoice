@@ -18,11 +18,11 @@ public interface PurchaseInvoiceRepository {
 
   boolean exists(@NotNull InvoiceId invoiceId);
 
-  Optional<PurchaseInvoice> findBy(@NotNull PurchaseInvoiceId id);
+  Stream<PurchaseInvoice> findAllBy(@NotNull PurchaseOrderId orderId);
 
   Optional<PurchaseInvoice> findBy(@NotNull InvoiceId invoiceId);
 
-  Stream<PurchaseInvoice> findAllBy(@NotNull PurchaseOrderId orderId);
+  Optional<PurchaseInvoice> findBy(@NotNull PurchaseInvoiceId id);
 
   void update(@NotNull PurchaseInvoice orderAcceptance);
 

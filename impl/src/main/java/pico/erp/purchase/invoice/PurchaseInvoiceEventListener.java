@@ -33,6 +33,21 @@ public class PurchaseInvoiceEventListener {
   @Take
   private PurchaseOrderService purchaseOrderService;
 
+  @EventListener
+  @JmsListener(destination = LISTENER_NAME + "."
+    + InvoiceEvents.ReceivedEvent.CHANNEL)
+  public void onInvoiceReceived(InvoiceEvents.ReceivedEvent event) {
+    val invoiceId = event.getId();
+    val exists = purchaseInvoiceService.exists(invoiceId);
+    if (exists) {
+      val purchaseInvoice = purchaseInvoiceService.get(invoiceId);
+      purchaseInvoiceService.receive(
+        PurchaseInvoiceRequests.ReceiveRequest.builder()
+          .id(purchaseInvoice.getId())
+          .build()
+      );
+    }
+  }
 
   @EventListener
   @JmsListener(destination = LISTENER_NAME + "."
@@ -91,22 +106,6 @@ public class PurchaseInvoiceEventListener {
           .senderId(purchaseOrder.getSupplierId())
           .receiveAddress(purchaseOrder.getReceiveAddress())
           .remark(purchaseInvoice.getRemark())
-          .build()
-      );
-    }
-  }
-
-  @EventListener
-  @JmsListener(destination = LISTENER_NAME + "."
-    + InvoiceEvents.ReceivedEvent.CHANNEL)
-  public void onInvoiceReceived(InvoiceEvents.ReceivedEvent event) {
-    val invoiceId = event.getId();
-    val exists = purchaseInvoiceService.exists(invoiceId);
-    if (exists) {
-      val purchaseInvoice = purchaseInvoiceService.get(invoiceId);
-      purchaseInvoiceService.receive(
-        PurchaseInvoiceRequests.ReceiveRequest.builder()
-          .id(purchaseInvoice.getId())
           .build()
       );
     }

@@ -3,8 +3,8 @@ package pico.erp.purchase.invoice;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-import kkojaeh.spring.boot.component.Give;
-import kkojaeh.spring.boot.component.Take;
+import kkojaeh.spring.boot.component.ComponentAutowired;
+import kkojaeh.spring.boot.component.ComponentBean;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import pico.erp.purchase.order.PurchaseOrderService;
 import pico.erp.shared.event.EventPublisher;
 
 @SuppressWarnings("Duplicates")
-@Give
+@ComponentBean
 @Service
 @Transactional
 @Validated
@@ -36,7 +36,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   @Autowired
   private PurchaseInvoiceMapper mapper;
 
-  @Take
+  @ComponentAutowired
   private PurchaseOrderService purchaseOrderService;
 
   @Override

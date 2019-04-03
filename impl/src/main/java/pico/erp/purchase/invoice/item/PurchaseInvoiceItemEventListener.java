@@ -1,6 +1,6 @@
 package pico.erp.purchase.invoice.item;
 
-import kkojaeh.spring.boot.component.Take;
+import kkojaeh.spring.boot.component.ComponentAutowired;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -25,19 +25,19 @@ public class PurchaseInvoiceItemEventListener {
   @Autowired
   private PurchaseInvoiceItemService purchaseInvoiceItemService;
 
-  @Take
+  @ComponentAutowired
   private PurchaseOrderItemService purchaseOrderItemService;
 
-  @Take
+  @ComponentAutowired
   private InvoiceItemService invoiceItemService;
 
   @Autowired
   private PurchaseInvoiceService purchaseInvoiceService;
 
-  @Take
+  @ComponentAutowired
   private ItemLotService itemLotService;
 
-  @Take
+  @ComponentAutowired
   private ItemSpecService itemSpecService;
 
   @EventListener

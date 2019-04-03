@@ -1,15 +1,15 @@
 package pico.erp.purchase.invoice;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import kkojaeh.spring.boot.component.ComponentAutowired;
+import kkojaeh.spring.boot.component.ComponentBean;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import pico.erp.audit.AuditService;
 import pico.erp.invoice.InvoiceId;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.CancelRequest;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.DetermineRequest;
@@ -18,12 +18,11 @@ import pico.erp.purchase.invoice.PurchaseInvoiceRequests.InvoiceRequest;
 import pico.erp.purchase.invoice.PurchaseInvoiceRequests.ReceiveRequest;
 import pico.erp.purchase.order.PurchaseOrderId;
 import pico.erp.purchase.order.PurchaseOrderService;
-import pico.erp.shared.Public;
 import pico.erp.shared.event.EventPublisher;
 
 @SuppressWarnings("Duplicates")
+@ComponentBean
 @Service
-@Public
 @Transactional
 @Validated
 public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
@@ -37,12 +36,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   @Autowired
   private PurchaseInvoiceMapper mapper;
 
-  @Lazy
-  @Autowired
-  private AuditService auditService;
-
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   private PurchaseOrderService purchaseOrderService;
 
   @Override
@@ -51,7 +45,6 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -68,9 +61,17 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       throw new PurchaseInvoiceExceptions.AlreadyExistsException();
     }
     val created = purchaseInvoiceRepository.create(purchaseInvoice);
-    auditService.commit(created);
     eventPublisher.publishEvents(response.getEvents());
     return mapper.map(created);
+  }
+
+  @Override
+  public void determine(DetermineRequest request) {
+    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
+      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
+    val response = purchaseInvoice.apply(mapper.map(request));
+    purchaseInvoiceRepository.update(purchaseInvoice);
+    eventPublisher.publishEvents(response.getEvents());
   }
 
   @Override
@@ -81,6 +82,22 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   @Override
   public boolean exists(InvoiceId invoiceId) {
     return purchaseInvoiceRepository.exists(invoiceId);
+  }
+
+  @Override
+  public PurchaseInvoiceData generate(GenerateRequest request) {
+    val order = purchaseOrderService.get(request.getOrderId());
+    val id = request.getId();
+    val createRequest = PurchaseInvoiceRequests.CreateRequest.builder()
+      .id(id)
+      .orderId(order.getId())
+      .dueDate(LocalDateTime.now().plusDays(1))
+      .build();
+    val created = create(createRequest);
+    eventPublisher.publishEvent(
+      new PurchaseInvoiceEvents.GeneratedEvent(created.getId())
+    );
+    return created;
   }
 
   @Override
@@ -98,22 +115,18 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
   }
 
   @Override
-  public void update(PurchaseInvoiceRequests.UpdateRequest request) {
-    val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
-      .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
-    val response = purchaseInvoice.apply(mapper.map(request));
-    purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
-    eventPublisher.publishEvents(response.getEvents());
+  public List<PurchaseInvoiceData> getAll(PurchaseOrderId orderId) {
+    return purchaseInvoiceRepository.findAllBy(orderId)
+      .map(mapper::map)
+      .collect(Collectors.toList());
   }
 
   @Override
-  public void determine(DetermineRequest request) {
+  public void invoice(InvoiceRequest request) {
     val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
@@ -123,41 +136,16 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
   }
 
   @Override
-  public void invoice(InvoiceRequest request) {
+  public void update(PurchaseInvoiceRequests.UpdateRequest request) {
     val purchaseInvoice = purchaseInvoiceRepository.findBy(request.getId())
       .orElseThrow(PurchaseInvoiceExceptions.NotFoundException::new);
     val response = purchaseInvoice.apply(mapper.map(request));
     purchaseInvoiceRepository.update(purchaseInvoice);
-    auditService.commit(purchaseInvoice);
     eventPublisher.publishEvents(response.getEvents());
-  }
-
-  @Override
-  public PurchaseInvoiceData generate(GenerateRequest request) {
-    val order = purchaseOrderService.get(request.getOrderId());
-    val id = request.getId();
-    val createRequest = PurchaseInvoiceRequests.CreateRequest.builder()
-      .id(id)
-      .orderId(order.getId())
-      .dueDate(OffsetDateTime.now().plusDays(1))
-      .build();
-    val created = create(createRequest);
-    eventPublisher.publishEvent(
-      new PurchaseInvoiceEvents.GeneratedEvent(created.getId())
-    );
-    return created;
-  }
-
-  @Override
-  public List<PurchaseInvoiceData> getAll(PurchaseOrderId orderId) {
-    return purchaseInvoiceRepository.findAllBy(orderId)
-      .map(mapper::map)
-      .collect(Collectors.toList());
   }
 
 }

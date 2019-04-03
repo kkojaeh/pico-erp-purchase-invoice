@@ -1,9 +1,8 @@
 package pico.erp.purchase.invoice
 
+import kkojaeh.spring.boot.component.SpringBootTestComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
@@ -12,18 +11,18 @@ import pico.erp.invoice.InvoiceRequests
 import pico.erp.invoice.InvoiceService
 import pico.erp.purchase.invoice.item.PurchaseInvoiceItemService
 import pico.erp.purchase.order.PurchaseOrderId
-import pico.erp.shared.IntegrationConfiguration
+import pico.erp.shared.ComponentDefinitionServiceLoaderTestComponentSiblingsSupplier
+import pico.erp.shared.TestParentApplication
 import pico.erp.user.UserId
 import spock.lang.Specification
 
-import java.time.OffsetDateTime
+import java.time.LocalDateTime
 
-@SpringBootTest(classes = [IntegrationConfiguration])
+@SpringBootTest(classes = [PurchaseInvoiceApplication, TestConfig])
+@SpringBootTestComponent(parent = TestParentApplication, siblingsSupplier = ComponentDefinitionServiceLoaderTestComponentSiblingsSupplier.class)
 @Transactional
 @Rollback
 @ActiveProfiles("test")
-@Configuration
-@ComponentScan("pico.erp.config")
 class PurchaseInvoiceServiceSpec extends Specification {
 
   @Autowired
@@ -42,11 +41,11 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   def unknownId = PurchaseInvoiceId.from("unknown")
 
-  def dueDate = OffsetDateTime.now().plusDays(7)
+  def dueDate = LocalDateTime.now().plusDays(7)
 
   def remark = "요청 비고"
 
-  def dueDate2 = OffsetDateTime.now().plusDays(8)
+  def dueDate2 = LocalDateTime.now().plusDays(8)
 
   def orderId = PurchaseOrderId.from("purchase-order-b")
 
@@ -59,7 +58,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     purchaseInvoiceService.create(
       new PurchaseInvoiceRequests.CreateRequest(
         id: id,
-        orderId:  orderId,
+        orderId: orderId,
         dueDate: dueDate,
         remark: remark
       )
@@ -70,7 +69,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     purchaseInvoiceService.create(
       new PurchaseInvoiceRequests.CreateRequest(
         id: id2,
-        orderId:  orderId,
+        orderId: orderId,
         dueDate: dueDate,
         remark: remark
       )
@@ -92,7 +91,6 @@ class PurchaseInvoiceServiceSpec extends Specification {
       )
     )
   }
-
 
 
   def receiveInvoice() {
@@ -125,7 +123,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
     )
   }
 
-  def "자동생성 - 발주를 통해 자동 생성" () {
+  def "자동생성 - 발주를 통해 자동 생성"() {
     when:
     determineInvoice()
     def id = PurchaseInvoiceId.from("purchase-invoice-generated")
@@ -144,7 +142,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   }
 
-  def "생성 - 작성중인 송장 존재" () {
+  def "생성 - 작성중인 송장 존재"() {
     when:
     createInvoice2()
     then:
@@ -152,7 +150,7 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   }
 
-  def "생성 - 확정 한 송장 존재" () {
+  def "생성 - 확정 한 송장 존재"() {
     when:
     determineInvoice()
     createInvoice2()

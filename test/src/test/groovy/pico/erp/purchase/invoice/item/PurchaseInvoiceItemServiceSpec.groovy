@@ -1,29 +1,26 @@
 package pico.erp.purchase.invoice.item
 
+import kkojaeh.spring.boot.component.SpringBootTestComponent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import pico.erp.purchase.invoice.PurchaseInvoiceId
-import pico.erp.purchase.invoice.PurchaseInvoiceRequests
-import pico.erp.purchase.invoice.PurchaseInvoiceService
+import pico.erp.purchase.invoice.*
 import pico.erp.purchase.order.PurchaseOrderId
 import pico.erp.purchase.order.PurchaseOrderRequests
 import pico.erp.purchase.order.PurchaseOrderService
 import pico.erp.purchase.order.item.PurchaseOrderItemId
-import pico.erp.shared.IntegrationConfiguration
+import pico.erp.shared.ComponentDefinitionServiceLoaderTestComponentSiblingsSupplier
+import pico.erp.shared.TestParentApplication
 import spock.lang.Specification
 
-@SpringBootTest(classes = [IntegrationConfiguration])
+@SpringBootTest(classes = [PurchaseInvoiceApplication, TestConfig])
+@SpringBootTestComponent(parent = TestParentApplication, siblingsSupplier = ComponentDefinitionServiceLoaderTestComponentSiblingsSupplier.class)
 @Transactional
 @Rollback
 @ActiveProfiles("test")
-@Configuration
-@ComponentScan("pico.erp.config")
 class PurchaseInvoiceItemServiceSpec extends Specification {
 
   @Lazy

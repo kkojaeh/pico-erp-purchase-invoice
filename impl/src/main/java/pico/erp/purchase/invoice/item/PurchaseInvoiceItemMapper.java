@@ -1,6 +1,7 @@
 package pico.erp.purchase.invoice.item;
 
 import java.util.Optional;
+import kkojaeh.spring.boot.component.ComponentAutowired;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -20,9 +21,6 @@ import pico.erp.item.lot.ItemLotService;
 import pico.erp.item.spec.ItemSpecData;
 import pico.erp.item.spec.ItemSpecId;
 import pico.erp.item.spec.ItemSpecService;
-import pico.erp.project.ProjectData;
-import pico.erp.project.ProjectId;
-import pico.erp.project.ProjectService;
 import pico.erp.purchase.invoice.PurchaseInvoice;
 import pico.erp.purchase.invoice.PurchaseInvoiceExceptions;
 import pico.erp.purchase.invoice.PurchaseInvoiceId;
@@ -38,16 +36,13 @@ public abstract class PurchaseInvoiceItemMapper {
   @Autowired
   protected AuditorAware<Auditor> auditorAware;
 
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   protected ItemService itemService;
 
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   protected ItemLotService itemLotService;
 
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   protected ItemSpecService itemSpecService;
 
   @Lazy
@@ -57,12 +52,10 @@ public abstract class PurchaseInvoiceItemMapper {
   @Autowired
   private PurchaseInvoiceMapper requestMapper;
 
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   private PurchaseOrderItemService purchaseOrderItemService;
 
-  @Lazy
-  @Autowired
+  @ComponentAutowired
   private InvoiceItemService invoiceItemService;
 
   protected PurchaseInvoiceItemId id(PurchaseInvoiceItem purchaseRequestItem) {

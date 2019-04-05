@@ -1,7 +1,7 @@
 package pico.erp.purchase.invoice;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import javax.persistence.Id;
 import lombok.AccessLevel;
@@ -35,7 +35,7 @@ public class PurchaseInvoice implements Serializable {
 
   InvoiceData invoice;
 
-  LocalDateTime dueDate;
+  OffsetDateTime dueDate;
 
   String remark;
 

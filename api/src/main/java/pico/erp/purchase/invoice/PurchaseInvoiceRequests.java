@@ -1,6 +1,6 @@
 package pico.erp.purchase.invoice;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
@@ -31,7 +31,7 @@ public interface PurchaseInvoiceRequests {
 
     @Future
     @NotNull
-    LocalDateTime dueDate;
+    OffsetDateTime dueDate;
 
     @Size(max = TypeDefinitions.REMARK_LENGTH)
     String remark;
@@ -50,7 +50,7 @@ public interface PurchaseInvoiceRequests {
 
     @Future
     @NotNull
-    LocalDateTime dueDate;
+    OffsetDateTime dueDate;
 
     @Size(max = TypeDefinitions.REMARK_LENGTH)
     String remark;

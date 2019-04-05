@@ -1,6 +1,6 @@
 package pico.erp.purchase.invoice;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import kkojaeh.spring.boot.component.ComponentAutowired;
@@ -91,7 +91,7 @@ public class PurchaseInvoiceServiceLogic implements PurchaseInvoiceService {
     val createRequest = PurchaseInvoiceRequests.CreateRequest.builder()
       .id(id)
       .orderId(order.getId())
-      .dueDate(LocalDateTime.now().plusDays(1))
+      .dueDate(OffsetDateTime.now().plusDays(1))
       .build();
     val created = create(createRequest);
     eventPublisher.publishEvent(

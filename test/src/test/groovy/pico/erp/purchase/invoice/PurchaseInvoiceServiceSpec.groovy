@@ -16,7 +16,7 @@ import pico.erp.shared.TestParentApplication
 import pico.erp.user.UserId
 import spock.lang.Specification
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 @SpringBootTest(classes = [PurchaseInvoiceApplication, TestConfig])
 @SpringBootTestComponent(parent = TestParentApplication, siblingsSupplier = ComponentDefinitionServiceLoaderTestComponentSiblingsSupplier.class)
@@ -41,11 +41,11 @@ class PurchaseInvoiceServiceSpec extends Specification {
 
   def unknownId = PurchaseInvoiceId.from("unknown")
 
-  def dueDate = LocalDateTime.now().plusDays(7)
+  def dueDate = OffsetDateTime.now().plusDays(7)
 
   def remark = "요청 비고"
 
-  def dueDate2 = LocalDateTime.now().plusDays(8)
+  def dueDate2 = OffsetDateTime.now().plusDays(8)
 
   def orderId = PurchaseOrderId.from("purchase-order-b")
 
